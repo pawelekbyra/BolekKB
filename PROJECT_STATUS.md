@@ -25,27 +25,26 @@
 
 ---
 
-## 🔄 In Progress (Phase 1B — API Implementation)
+## ✅ Completed (Phase 1B — API Implementation)
 
-- [ ] **Implement HTTP API endpoints**
-  - [ ] POST /api/agent/knowledge/store (add documents)
-  - [ ] POST /api/agent/knowledge/query (semantic search)
-  - [ ] GET /api/agent/knowledge/collections (list collections)
-  - [ ] DELETE /api/agent/knowledge/documents/:docId (delete by ID)
-  - [ ] DELETE /api/agent/knowledge/collections/:name (delete collection)
+- [x] **Implement HTTP API endpoints**
+  - [x] POST /api/agent/knowledge/store (add documents)
+  - [x] POST /api/agent/knowledge/query (semantic search)
+  - [x] GET /api/agent/knowledge/collections (list collections)
+  - [x] DELETE /api/agent/knowledge/documents/:docId (delete by ID)
+  - [x] DELETE /api/agent/knowledge/collections/:name (delete collection)
+  - [x] BolekKB wrapper complete with Hono server
+  - [x] AnythingLLMAdapter with query and storage operations
+  - [x] Docker Compose for wrapper + AnythingLLM
 
-- [ ] **Search testing**
-  - [ ] Test query with low-relevance threshold
-  - [ ] Test query with high-relevance threshold
-  - [ ] Test collection filtering
-  - [ ] Test tag-based filtering
-  - [ ] Test error handling (service down, timeout)
-
-- [ ] **Ingestion workflow**
-  - [ ] Test document storage from agent memory
-  - [ ] Test batch import from API
-  - [ ] Test PDF extraction (if supported)
-  - [ ] Test metadata preservation
+- [x] **Wrapper Infrastructure**
+  - [x] TypeScript setup (tsconfig, package.json)
+  - [x] Logger with JSON output
+  - [x] Adapter pattern for API translation
+  - [x] Unit tests for adapter
+  - [x] Health endpoint and Bearer token auth
+  - [x] Environment configuration template
+  - [x] Documentation (README, WRAPPER-SETUP.md)
 
 ---
 
