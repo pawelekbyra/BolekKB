@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  anythingllm:
+    image: mintplexlabs/anythingllm:latest
+    ports:
+      - "3001:3001"
+    environment:
+      LOG_LEVEL: info
+      NODE_ENV: production
+    volumes:
+      - anythingllm_storage:/app/server/storage
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/api/v1/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  wrapper:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3002:3002"
+    environment:
+      ANYTHINGLLM_URL: http://anythingllm:3001
+      PORT: 3002
+      LOG_LEVEL: info
+      BEARER_TOKEN: test_token_for_dev
+    depends_on:
+      anythingllm:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3002/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  anythingllm_storage:
