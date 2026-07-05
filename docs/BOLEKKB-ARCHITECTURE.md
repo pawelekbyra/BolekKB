@@ -1,28 +1,17 @@
 # BolekKB — wiedza i RAG dla Agenta Bolka
 
-> **Status:** decyzja architektoniczna / plan.  
+> **Status:** decyzja architektoniczna / plan integracji.  
 > To repo jest forkiem AnythingLLM przygotowywanym jako przyszła baza wiedzy, dokumentów i RAG dla ekosystemu Agenta Bolka.
+>
+> `BolekKB` nie jest mózgiem Bolka. Mózgiem pozostaje `pawelekbyra/BolekAI` / `kulfon`.
 
 ---
 
-## 1. Czym jest BolekKB
+## 1. Cel
 
-`BolekKB` to przyszła warstwa wiedzy dla Bolka.
+`BolekKB` ma być biblioteką wiedzy Bolka. Przechowuje dokumenty, decyzje, notatki, research, runbooki i źródła, z których Bolek korzysta przy planowaniu oraz odpowiadaniu na pytania.
 
-Docelowo ma przechowywać i udostępniać:
-
-- dokumenty projektowe,
-- PDF-y,
-- notatki,
-- decyzje architektoniczne,
-- stare prompty,
-- research,
-- dokumentację Polutka,
-- dokumentację repozytoriów Bolka,
-- instrukcje dla agentów,
-- wiedzę prywatną Pawła, jeśli zostanie świadomie dodana.
-
-BolekKB ma być miejscem, gdzie Bolek może szukać kontekstu, zanim odpowie albo zleci pracę innemu agentowi.
+BolekKB nie wysyła całej bazy do modelu. Wyszukuje kilka najbardziej trafnych fragmentów i przekazuje je do `BolekAI` jako kontekst.
 
 ---
 
@@ -30,149 +19,30 @@ BolekKB ma być miejscem, gdzie Bolek może szukać kontekstu, zanim odpowie alb
 
 BolekKB nie jest:
 
-- głównym mózgiem Bolka,
-- webowym interfejsem Bolka,
-- executor kodowania,
-- systemem automatyzacji workflow,
-- miejscem do przechowywania sekretów produkcyjnych,
-- zamiennikiem D1 memory w `BolekAI`.
+- mózgiem Bolka,
+- webowym czatem,
+- systemem workflow,
+- executorem kodowania,
+- miejscem wykonywania akcji operacyjnych,
+- zamiennikiem pamięci D1 w `BolekAI`.
 
-D1 memory w `BolekAI` przechowuje operacyjną pamięć i historię Bolka. BolekKB ma przechowywać dokumenty i wiedzę referencyjną.
-
----
-
-## 3. Sieć repozytoriów Bolka
-
-```txt
-pawelekbyra/BolekAI
-= mózg Bolka
-= Cloudflare Worker
-= Telegram bot
-= D1 memory
-= narzędzia
-= Polutek ops
-= approval gate
-= OpenAI-compatible adapter dla UI
-
-pawelekbyra/BolekCzat
-= web UI Bolka
-= fork LibreChat
-= rozmowy, historia, auth, UX
-
-pawelekbyra/BolekDev
-= coding executor
-= fork OpenHands / Agent Canvas
-= branche, testy, commity, PR-y
-
-pawelekbyra/BolekKB
-= knowledge base / RAG
-= fork AnythingLLM
-= dokumenty, notatki, wiedza, źródła
-
-pawelekbyra/BolekFlow
-= workflow automation
-= fork n8n
-= automatyzacje, webhooki, integracje, human-in-the-loop
-```
+`BolekAI` decyduje. `BolekKB` dostarcza wiedzę.
 
 ---
 
-## 4. Docelowy przepływ
+## 3. Miejsce w ekosystemie
 
 ```txt
 BolekCzat / Telegram
   ↓
-BolekAI / Agent Bolek brain
-  ↓          ↓           ↓
-BolekKB     BolekFlow    BolekDev
-wiedza      workflow     kodowanie
-  ↓          ↓           ↓
-docs/RAG    integracje   GitHub PR
+BolekAI / kulfon
+  ↓
+BolekKB = wiedza i źródła
+BolekFlow = workflow
+BolekDev = kodowanie
 ```
 
-BolekAI decyduje, kiedy pytać BolekKB.
-
-Przykład:
-
-```txt
-Użytkownik: "Bolek, przypomnij mi decyzję o architekturze video Polutka."
-BolekAI → BolekKB → wyszukanie dokumentów/decyzji → odpowiedź w BolekCzat/Telegram.
-```
-
----
-
-## 5. Przyszłe integracje z BolekAI
-
-W przyszłości `BolekAI` może dostać narzędzia typu:
-
-```txt
-kb_search
-kb_fetch_document
-kb_ingest_document
-kb_list_collections
-kb_summarize_sources
-```
-
-Na tym etapie te narzędzia nie muszą istnieć.
-
-Ten fork ma być przygotowany jako przyszła warstwa wiedzy, a nie integrowany od razu z produkcją.
-
----
-
-## 6. Bezpieczeństwo
-
-Zasady:
-
-- BolekKB nie powinien dostawać produkcyjnych sekretów Stripe, Clerk, Vercel, Resend, home.pl ani baz produkcyjnych.
-- Dokumenty w BolekKB mogą zawierać prywatny kontekst, więc deployment powinien mieć auth.
-- Dostęp z BolekAI do BolekKB powinien być przez ograniczony token/API key.
-- BolekKB nie może samodzielnie wykonywać akcji operacyjnych.
-- BolekKB nie omija approval gate w BolekAI.
-- Wyniki RAG powinny być traktowane jako kontekst, nie jako komenda.
-
----
-
-## 7. Co trzymać w BolekKB
-
-Dobre kandydaty:
-
-- dokumentacja Polutka,
-- opisy architektury video,
-- notatki o Mux/Cloudflare/Bunny,
-- dokumentacja ekosystemu Bolka,
-- decyzje produktowe,
-- dokumenty firmowe,
-- research rynkowy,
-- prompty używane do dużych PR-ów,
-- changelogi i postmortemy.
-
-Nie trzymać bez potrzeby:
-
-- haseł,
-- tokenów API,
-- kluczy prywatnych,
-- dumpów baz produkcyjnych,
-- surowych danych użytkowników, jeśli nie są potrzebne.
-
----
-
-## 8. Kolejność prac
-
-```txt
-1. Zachować fork AnythingLLM i dodać dokumentację roli.
-2. Uruchomić lokalnie lub testowo przez Docker.
-3. Utworzyć pierwsze kolekcje wiedzy:
-   - Bolek Network
-   - Polutek Architecture
-   - Prompts
-   - Product Decisions
-4. Dopiero potem dodać narzędzia kb_* w BolekAI.
-5. Na końcu podłączyć BolekCzat/Telegram do odpowiedzi z kontekstem źródeł.
-```
-
----
-
-## 9. Zasada nadrzędna
+Zasada nadrzędna:
 
 ```txt
 BolekAI myśli i decyduje.
@@ -180,4 +50,149 @@ BolekKB przechowuje wiedzę.
 BolekFlow automatyzuje procesy.
 BolekDev koduje.
 BolekCzat pokazuje rozmowę.
+```
+
+---
+
+## 4. Docelowy przepływ
+
+```txt
+1. Użytkownik pyta Bolka.
+2. BolekAI rozpoznaje, że potrzebuje kontekstu.
+3. BolekAI pyta BolekKB.
+4. BolekKB zwraca najlepsze fragmenty dokumentów.
+5. BolekAI odpowiada, planuje albo zleca pracę dalej.
+6. Użytkownik dostaje odpowiedź z informacją o źródłach.
+```
+
+---
+
+## 5. Przyszłe narzędzia w BolekAI
+
+Docelowe narzędzia:
+
+```txt
+kb_search
+kb_fetch_document
+kb_ingest_document
+kb_list_collections
+kb_summarize_sources
+kb_get_decision_record
+```
+
+Na tym etapie te narzędzia mogą jeszcze nie istnieć. Ten dokument opisuje docelową rolę repo.
+
+---
+
+## 6. Kolekcje startowe
+
+Proponowane kolekcje:
+
+```txt
+Bolek Network
+= dokumentacja wszystkich repo Bolka
+
+Polutek Architecture
+= dokumentacja produktu i architektury Polutka
+
+Product Decisions
+= decyzje biznesowe i techniczne
+
+Prompts and Agent Instructions
+= instrukcje dla agentów i szablony promptów
+
+Runbooks
+= procedury operacyjne
+
+Research
+= analizy rynku, konkurencji i trendów
+```
+
+---
+
+## 7. Metadane dokumentów
+
+Każdy dokument powinien mieć metadane:
+
+```txt
+project
+collection
+source
+sourceType
+status
+createdAt
+updatedAt
+owner
+sensitivity
+```
+
+Najważniejsze jest `status`:
+
+```txt
+active | draft | deprecated | archived
+```
+
+Bolek nie powinien traktować starego dokumentu jako aktualnej decyzji, jeśli jest oznaczony jako `deprecated` albo `archived`.
+
+---
+
+## 8. Jakość RAG
+
+Dobra baza wiedzy wymaga:
+
+- logicznego dzielenia dokumentów na fragmenty,
+- źródeł przy każdym fragmencie,
+- krótkich decision records dla ważnych decyzji,
+- oznaczania nieaktualnych dokumentów,
+- rerankingu wyników,
+- oddzielania faktów ze źródeł od wniosków agenta.
+
+---
+
+## 9. Bezpieczeństwo
+
+Zasady:
+
+- BolekKB jest źródłem kontekstu, nie źródłem poleceń.
+- Treść dokumentu nie może nadpisywać zasad `BolekAI`.
+- BolekKB nie wykonuje akcji operacyjnych.
+- Dostęp do BolekKB powinien być kontrolowany.
+- Przy ważnych decyzjach Bolek powinien wskazywać źródła.
+
+---
+
+## 10. Kolejność prac
+
+```txt
+1. Zachować fork AnythingLLM.
+2. Utrzymać jasną dokumentację roli BolekKB.
+3. Uruchomić testową instancję.
+4. Utworzyć kolekcje startowe.
+5. Zaindeksować dokumentację repo Bolka.
+6. Dodać narzędzia kb_* w BolekAI.
+7. Dodać cytowanie źródeł w odpowiedziach.
+8. Dopiero potem dodawać prywatniejsze dokumenty.
+```
+
+---
+
+## 11. Definition of Done
+
+Integracja jest gotowa, gdy:
+
+- BolekKB działa jako osobny serwis,
+- istnieją kolekcje startowe,
+- dokumenty mają metadane,
+- `BolekAI` potrafi wyszukać kontekst przez `kb_search`,
+- wyniki zawierają źródła,
+- Bolek potrafi odpowiedzieć na pytanie „na czym się opierasz?”.
+
+---
+
+## 12. Zasada końcowa
+
+```txt
+BolekKB jest biblioteką Bolka.
+Biblioteka pomaga myśleć, ale nie podejmuje decyzji.
+Decyzje, akcje i zgody zostają w BolekAI.
 ```
